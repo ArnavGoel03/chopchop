@@ -1,44 +1,63 @@
 # CHOP.
 
-Single-page D2C store for a 5-blade Indian kitchen chopper. Static HTML, Razorpay client-side checkout, COD flow, WhatsApp deep link, referral section.
+Indian D2C single-page storefront for a 5-blade kitchen chopper. Static HTML + vanilla JS. Razorpay + COD checkout, WhatsApp order capture, pincode delivery checker, referral program, Meta-ads-ready.
 
-## Run locally
+- **Live:** https://chopchop.vercel.app
+- **Code:** https://github.com/ArnavGoel03/chopchop
 
-Just open `index.html` in a browser. No build step.
+## Workflow
 
-## Go live on Vercel
+Push to `main` and Vercel auto-deploys to production. Push any other branch and Vercel posts a preview URL.
 
 ```bash
-cd ~/Documents/Projects/chop
-npx vercel --prod --yes
+# edit files
+git add -A
+git commit -m "your message"
+git push                # → auto-deploys
 ```
 
-First run prompts a one-time login (browser opens). Subsequent deploys are silent.
+To manually trigger a production deploy: `npx vercel --prod --yes`.
 
-## Razorpay setup
+## Three placeholders to swap before scaling Meta ads
 
-1. Sign up at https://dashboard.razorpay.com
-2. Get your **Key ID** from Settings → API Keys (use `rzp_test_...` while testing, `rzp_live_...` for production)
-3. Replace `rzp_test_REPLACE_WITH_YOUR_KEY` in `index.html` (search for it — single occurrence in the `<script>` block)
+All near the top of `index.html`, lines 16-17:
 
-For production-grade payments you also need to verify the HMAC signature server-side. To add that, drop an `/api/verify.js` Vercel serverless function that hashes `razorpay_order_id|razorpay_payment_id` with your Key Secret and compares to `razorpay_signature`. The current site is fine for soft-launch and Meta-ads testing.
+```js
+window.META_PIXEL_ID = '';              // paste Meta Pixel ID
+window.BUSINESS_WHATSAPP = '919999999999';  // your WhatsApp Business number, no +
+```
 
-## COD orders
+And in the `placeOrder()` function near the bottom:
 
-Right now COD submissions just `console.log`. To capture them:
-- Easiest: swap `console.log('COD order'...)` for a `fetch()` to a Google Apps Script web app writing to a Sheet, OR
-- Better: a Vercel `/api/cod.js` function that writes to a database (Vercel Postgres, Supabase) and emails you
+```js
+const KEY = window.RAZORPAY_KEY_ID || 'rzp_test_REPLACE_WITH_YOUR_KEY';
+```
 
-## What to change before launching ads
+Replace the fallback with your Razorpay Key ID from https://dashboard.razorpay.com. Until you do, orders flow through WhatsApp instead — the site still works.
 
-- [ ] Razorpay key (`rzp_test_REPLACE_WITH_YOUR_KEY` in `index.html`)
-- [ ] WhatsApp number (`919999999999` in `index.html` — search and replace)
-- [ ] Meta Pixel — add the standard snippet inside `<head>` and fire `Purchase` events from `showSuccess()`
-- [ ] Product photos — currently illustrated SVGs; swap for real product shots when you have them
-- [ ] Domain — `vercel domains add chopindia.in` (or whatever you buy) and add via the dashboard
+## Order flow
 
-## Files
+- **Online payment** (when Razorpay configured): standard Razorpay modal, webhook in `handler:` callback.
+- **Online payment** (no Razorpay key): opens WhatsApp with order details + "share UPI ID" message.
+- **COD**: opens WhatsApp with full order details for you to confirm and dispatch.
 
-- `index.html` — the entire storefront
-- `README.md` — this file
-- `CLAUDE.md` — project notes for future Claude sessions
+Every successful order also fires a Meta Pixel `Purchase` event (if Pixel ID is set) and stores the last order in localStorage.
+
+## File map
+
+- `index.html` — storefront (hero, demo, features, reviews, bundles, refer, FAQ, checkout modal)
+- `track.html` — order tracking, deterministic mock based on order ID hash
+- `privacy.html`, `terms.html`, `returns.html`, `shipping.html` — required for Meta ad approval
+- `_shared.css` — shell stylesheet for the policy pages
+- `vercel.json` — clean URLs + security headers
+- `CLAUDE.md` — notes for future Claude sessions, defers to `~/Documents/Projects/DEVELOP_RULES.md`
+
+## Production hardening (before serious ad spend)
+
+- [ ] Razorpay key + server-side HMAC verification (Vercel function at `/api/verify`)
+- [ ] WhatsApp Business number replaced everywhere (`grep 919999999999` to find)
+- [ ] Meta Pixel ID active + Purchase event fires (test in Meta Events Manager)
+- [ ] Custom domain (`vercel domains add yourdomain.in`)
+- [ ] Real product photography swapped in for the SVG illustration
+- [ ] Privacy / Terms reviewed by a lawyer (current copy is a reasonable starting point, not legal advice)
+- [ ] Have a lawyer + CA confirm GST invoice fields and refund policy match your business setup
