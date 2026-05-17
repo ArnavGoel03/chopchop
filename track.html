@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Track Your Order — CHOP.</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23C24A2D'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='20' font-weight='700' fill='%23FBF1E1' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400..700;1,400..600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/_shared.css">
+<style>
+.input-row{display:flex;gap:10px;margin-top:24px}
+.input-row input{flex:1;padding:14px 16px;border:1.5px solid rgba(31,20,16,.14);border-radius:12px;background:#fff;font-family:inherit;font-size:16px;color:#1F1410;text-transform:uppercase;letter-spacing:.04em}
+.input-row input:focus{outline:none;border-color:#C24A2D}
+.input-row button{background:#C24A2D;color:#fff;border:none;padding:14px 22px;border-radius:12px;font-weight:700;font-family:inherit;cursor:pointer;font-size:15px}
+.input-row button:hover{background:#9C3920}
+.timeline{margin-top:32px;background:#fff;border:1px solid rgba(31,20,16,.14);border-radius:16px;padding:30px;display:none}
+.timeline.show{display:block}
+.t-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap}
+.t-id{font-family:"Fraunces",serif;font-size:22px;font-weight:600}
+.t-eta{font-size:14px;color:#4A3A33}
+.t-eta b{color:#C24A2D;font-weight:600}
+.steps{margin-top:26px;display:grid;grid-template-columns:1fr;gap:0;position:relative}
+.step{display:grid;grid-template-columns:36px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid rgba(31,20,16,.08)}
+.step:last-child{border-bottom:none}
+.step .dot{width:24px;height:24px;border-radius:50%;background:rgba(31,20,16,.1);display:grid;place-items:center;color:#4A3A33;font-size:14px;font-weight:700;margin-top:4px}
+.step.done .dot{background:#6BA378;color:#fff}
+.step.current .dot{background:#C24A2D;color:#fff;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(194,74,45,.2)}}
+.step.future .dot{background:rgba(31,20,16,.08);color:#4A3A33}
+.step .s-title{font-family:"Fraunces",serif;font-size:18px;font-weight:500;color:#1F1410}
+.step.future .s-title{color:#4A3A33}
+.step .s-time{font-size:13px;color:#4A3A33;margin-top:2px}
+.error-msg{margin-top:24px;color:#C24A2D;font-size:14px;display:none}
+.error-msg.show{display:block}
+.help{margin-top:36px;padding:20px;background:#F5E5C8;border-radius:12px;font-size:14px;color:#4A3A33}
+.help b{color:#1F1410}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="/"><span class="stem"></span>CHOP.</a>
+  <a class="back" href="/" style="margin-top:24px">← Back to shop</a>
+  <div class="eyebrow">Track</div>
+  <h1>Where's <em>my CHOP?</em></h1>
+  <p class="meta">Enter the order ID we sent via SMS / WhatsApp (format: CHOP-XXXXX####).</p>
+
+  <div class="input-row">
+    <input id="oid" placeholder="CHOP-AB1234" autocomplete="off">
+    <button onclick="track()">Track</button>
+  </div>
+  <div class="error-msg" id="err">We couldn't find that order. Check the ID or WhatsApp us at +91 99999 99999.</div>
+
+  <div class="timeline" id="tl">
+    <div class="t-head">
+      <div class="t-id" id="t-id">CHOP-</div>
+      <div class="t-eta" id="t-eta">ETA: <b>2 days</b></div>
+    </div>
+    <div class="steps">
+      <div class="step done" id="s1"><div class="dot">✓</div><div><div class="s-title">Order confirmed</div><div class="s-time" id="t1">—</div></div></div>
+      <div class="step" id="s2"><div class="dot">2</div><div><div class="s-title">Packed in Bengaluru warehouse</div><div class="s-time" id="t2">—</div></div></div>
+      <div class="step" id="s3"><div class="dot">3</div><div><div class="s-title">Dispatched with courier</div><div class="s-time" id="t3">—</div></div></div>
+      <div class="step" id="s4"><div class="dot">4</div><div><div class="s-title">Out for delivery</div><div class="s-time" id="t4">—</div></div></div>
+      <div class="step" id="s5"><div class="dot">5</div><div><div class="s-title">Delivered</div><div class="s-time" id="t5">—</div></div></div>
+    </div>
+  </div>
+
+  <div class="help">
+    <p><b>Can't find your order ID?</b> Check the SMS we sent right after checkout, or the WhatsApp confirmation. Still stuck? WhatsApp us at <a href="https://wa.me/919999999999">+91 99999 99999</a> with your phone number — we'll look it up.</p>
+  </div>
+
+  <div class="foot">
+    <div>© 2026 CHOP Goods Pvt. Ltd.</div>
+    <div><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/returns">Returns</a><a href="/shipping">Shipping</a></div>
+  </div>
+</div>
+
+<script>
+// Mock tracking: deterministic state from the order ID hash so the same ID gives the same result.
+// In production, swap for a fetch to /api/order/:id that reads from your DB.
+function hash(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return Math.abs(h)}
+function fmtDate(d){return d.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+
+function track(){
+  const v=document.getElementById('oid').value.trim().toUpperCase();
+  const err=document.getElementById('err'),tl=document.getElementById('tl');
+  if(!/^CHOP-[A-Z0-9]{4,12}$/.test(v)){err.classList.add('show');tl.classList.remove('show');return}
+  err.classList.remove('show');
+  const h=hash(v);
+  const stage=(h%5)+1; // 1..5, deterministic
+  const baseTime=Date.now()-((h%5)+1)*24*3600*1000;
+  document.getElementById('t-id').textContent=v;
+  const etaDays=Math.max(0,5-stage);
+  document.getElementById('t-eta').innerHTML=etaDays?`ETA: <b>${etaDays} day${etaDays>1?'s':''}</b>`:'<b>Delivered</b>';
+  const steps=[1,2,3,4,5];
+  steps.forEach(i=>{
+    const el=document.getElementById('s'+i);
+    el.classList.remove('done','current','future');
+    if(i<stage){el.classList.add('done');el.querySelector('.dot').textContent='✓'}
+    else if(i===stage){el.classList.add('current');el.querySelector('.dot').textContent=i}
+    else{el.classList.add('future');el.querySelector('.dot').textContent=i}
+    const t=document.getElementById('t'+i);
+    if(i<=stage){t.textContent=fmtDate(new Date(baseTime+i*8*3600*1000))}else{t.textContent='Pending'}
+  });
+  tl.classList.add('show');
+  history.replaceState(null,'','?id='+encodeURIComponent(v));
+}
+
+// Auto-track if ?id= param exists
+const params=new URLSearchParams(location.search);
+if(params.get('id')){document.getElementById('oid').value=params.get('id');track()}
+</script>
+</body>
+</html>
