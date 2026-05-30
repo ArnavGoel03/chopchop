@@ -1,6 +1,28 @@
-.vercel
-.DS_Store
-node_modules
-*.log
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
+/dist
+
+# env
 .env
+.env*.local
 .env.local
+
+# misc
+.DS_Store
+*.log
+*.pem
+.vercel
+*.tsbuildinfo
+
+# drizzle
+/drizzle/meta
