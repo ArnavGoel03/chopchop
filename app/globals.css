@@ -31,6 +31,18 @@
   --shadow-pop: 0 14px 40px rgba(31, 20, 16, 0.18);
 
   --animate-spin-slow: spin 22s linear infinite;
+  --animate-fadeIn: fadeIn 0.2s ease forwards;
+  --animate-slideInRight: slideInRight 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
 
 * {

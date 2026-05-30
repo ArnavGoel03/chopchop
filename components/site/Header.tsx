@@ -4,6 +4,7 @@ import type { Region } from "@/lib/types";
 import { Container } from "@/components/ui/Container";
 import { CartCount } from "./CartCount";
 import { RegionSwitcher } from "./RegionSwitcher";
+import { MobileNav } from "./MobileNav";
 
 export function Header({ region }: { region: Region }) {
   const base = `/${region.segment}`;
@@ -39,7 +40,9 @@ export function Header({ region }: { region: Region }) {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <RegionSwitcher />
+            <div className="hidden md:block">
+              <RegionSwitcher />
+            </div>
             <Link
               href={`${base}/cart`}
               aria-label="Cart"
@@ -48,6 +51,7 @@ export function Header({ region }: { region: Region }) {
               <ShoppingBag size={20} />
               <CartCount />
             </Link>
+            <MobileNav region={region} />
           </div>
         </Container>
       </header>
