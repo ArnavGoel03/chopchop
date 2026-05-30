@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────────────────────────────
+   CHOP. design system — Indian-summer palette, Fraunces + Plus Jakarta.
+   Tokens are exposed as Tailwind utilities (bg-paper, text-tomato, …) and
+   as CSS variables for hand-written CSS.
+   ─────────────────────────────────────────────────────────────────────── */
+@theme {
+  --color-paper: #fbf1e1;
+  --color-paper-2: #f5e5c8;
+  --color-ink: #1f1410;
+  --color-ink-soft: #4a3a33;
+  --color-marigold: #f2a93b;
+  --color-tomato: #c24a2d;
+  --color-tomato-d: #9c3920;
+  --color-melon: #e2547a;
+  --color-mint: #6ba378;
+  --color-line: rgba(31, 20, 16, 0.14);
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+
+  --radius-card: 14px;
+  --radius-lg: 18px;
+
+  --shadow-card: 0 18px 40px rgba(31, 20, 16, 0.08);
+  --shadow-pop: 0 14px 40px rgba(31, 20, 16, 0.18);
+
+  --animate-spin-slow: spin 22s linear infinite;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Paper grain overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  mix-blend-mode: multiply;
+  opacity: 0.1;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .12  0 0 0 0 .08  0 0 0 0 .06  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Scroll-reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 0.7s ease;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Shared display heading helper */
+.display {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 144, "SOFT" 80;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.display em {
+  font-style: italic;
+  font-weight: 400;
+}
