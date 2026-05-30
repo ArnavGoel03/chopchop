@@ -245,7 +245,7 @@ export default async function OrderConfirmationPage({
                 href={nextSteps.cta.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-ink transition-opacity hover:opacity-90"
               >
                 <MessageCircle size={16} aria-hidden="true" />
                 {nextSteps.cta.label}

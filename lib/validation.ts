@@ -18,7 +18,7 @@ export const checkoutSchema = z.object({
     email: z.string().email().optional(),
   }),
   couponCode: z.string().optional(),
-  shippingAddress: z.record(z.string(), z.string()).optional(),
+  shippingAddress: z.string().min(1).optional(),
   gstin: z.string().optional(),
   businessName: z.string().optional(),
 });

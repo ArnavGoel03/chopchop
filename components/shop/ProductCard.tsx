@@ -18,7 +18,7 @@ export function ProductCard({
   const initial = product.name.replace(/^CHOP\.\s+/, "")[0] ?? "C";
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-white transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-pop)]">
+    <article className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper-2 transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-pop)]">
       <Link href={href} className="block focus-visible:outline-none" tabIndex={-1} aria-hidden>
         <ProductVisual
           accent={product.accent}

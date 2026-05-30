@@ -4,7 +4,8 @@ import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { StarRating } from "@/components/ui/StarRating";
-import { featuredProducts, CATEGORIES } from "@/lib/catalog";
+import { featuredProducts, CATEGORIES, getProduct } from "@/lib/catalog";
+import { formatMoney } from "@/lib/money";
 import {
   Truck,
   CreditCard,
@@ -22,7 +23,7 @@ export function FeaturedSection({ region }: { region: Region }) {
       <Container>
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.18em] text-tomato">
+            <span className="text-xs font-bold uppercase tracking-[0.18em] text-tomato-d">
               Our picks
             </span>
             <h2
@@ -83,7 +84,7 @@ export function CategorySection({ region }: { region: Region }) {
             className="display mt-2 text-4xl font-semibold md:text-5xl"
           >
             Every corner of the{" "}
-            <em className="font-display italic text-marigold">kitchen</em>
+            <em className="font-display italic text-marigold-d">kitchen</em>
           </h2>
         </div>
 
@@ -209,7 +210,7 @@ export function HowItWorks({ region }: { region: Region }) {
           {STEPS.map((step) => (
             <li
               key={step.num}
-              className="relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-white p-8"
+              className="relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper-2 p-8"
             >
               <span
                 className="pointer-events-none absolute right-5 top-4 font-display text-[52px] italic text-marigold opacity-60 leading-none"
@@ -318,7 +319,7 @@ export function ReviewsStrip({ region }: { region: Region }) {
       <Container>
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.18em] text-tomato">
+            <span className="text-xs font-bold uppercase tracking-[0.18em] text-tomato-d">
               What people say
             </span>
             <h2
@@ -326,7 +327,7 @@ export function ReviewsStrip({ region }: { region: Region }) {
               className="display mt-2 text-4xl font-semibold md:text-5xl"
             >
               2,417 kitchens{" "}
-              <em className="font-display italic text-marigold">changed.</em>
+              <em className="font-display italic text-marigold-d">changed.</em>
             </h2>
           </div>
           <StarRating rating={4.8} count={2417} />
@@ -339,10 +340,10 @@ export function ReviewsStrip({ region }: { region: Region }) {
           {REVIEWS.map((r) => (
             <li
               key={r.author}
-              className="rounded-[var(--radius-card)] border border-line bg-white p-7"
+              className="rounded-[var(--radius-card)] border border-line bg-paper-2 p-7"
             >
               <div
-                className="text-marigold tracking-[3px]"
+                className="text-marigold-d tracking-[3px]"
                 aria-label={`${r.rating} stars`}
               >
                 {"★".repeat(r.rating)}
@@ -365,6 +366,17 @@ export function ReviewsStrip({ region }: { region: Region }) {
 // ─── Final CTA ───────────────────────────────────────────────────────────────
 
 export function FinalCTA({ region }: { region: Region }) {
+  const flagship = getProduct("5-blade-chopper");
+  const flagshipPrice = flagship
+    ? formatMoney(flagship.price[region.id], region.id)
+    : region.id === "in"
+    ? "₹999"
+    : "$14.99";
+  const codFeeFormatted =
+    region.id === "in" && region.codFee > 0
+      ? formatMoney(region.codFee, region.id)
+      : null;
+
   return (
     <section
       className="relative overflow-hidden py-28 text-center"
@@ -388,7 +400,7 @@ export function FinalCTA({ region }: { region: Region }) {
         </h2>
         <p className="mx-auto mt-7 max-w-[48ch] text-lg text-ink-soft">
           {region.id === "in"
-            ? "₹999. Free delivery. COD available at checkout. Warranty included."
+            ? `${flagshipPrice}. Free delivery.${codFeeFormatted ? ` +${codFeeFormatted} COD fee.` : " COD available at checkout."} Warranty included.`
             : "Ships worldwide. Tracked and insured. 1-year warranty on every order."}
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">

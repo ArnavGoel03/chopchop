@@ -12,7 +12,7 @@ export function StarRating({
   const full = Math.round(rating);
   return (
     <span className={cn("inline-flex items-center gap-2 text-sm", className)}>
-      <span className="tracking-[2px] text-marigold" aria-hidden>
+      <span className="tracking-[2px] text-marigold-d" aria-hidden>
         {"★".repeat(full)}
         <span className="text-line">{"★".repeat(5 - full)}</span>
       </span>

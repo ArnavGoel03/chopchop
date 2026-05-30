@@ -29,7 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Categories
     for (const cat of CATEGORIES) {
       entries.push({
-        url: absoluteUrl(`/${region}/shop?category=${cat.id}`),
+        url: absoluteUrl(`/${region}/shop/${cat.id}`),
         lastModified: now,
         changeFrequency: "weekly",
         priority: 0.7,
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Products
     for (const product of allProducts()) {
       entries.push({
-        url: absoluteUrl(`/${region}/products/${product.slug}`),
+        url: absoluteUrl(`/${region}/product/${product.slug}`),
         lastModified: now,
         changeFrequency: "weekly",
         priority: 0.85,

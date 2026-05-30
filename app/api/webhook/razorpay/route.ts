@@ -2,7 +2,7 @@ export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/payments/razorpay";
-import { markPaid, getOrderByCode, listOrders } from "@/lib/orders";
+import { markPaid, getOrderByProviderOrderId } from "@/lib/orders";
 
 // Razorpay requires raw body for signature verification — do NOT parse JSON
 // before verifying.
@@ -39,18 +39,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const razorpayPaymentId = paymentEntity.id as string | undefined;
 
       if (razorpayOrderId && razorpayPaymentId) {
-        // Find the order by providerOrderId
-        // We need to look up by providerOrderId — search recent orders
-        const recentOrders = await listOrders({ limit: 200, status: "pending" });
-        const order = recentOrders.find(
-          (o) => o.providerOrderId === razorpayOrderId,
-        );
+        // Direct indexed lookup — not capped by a list limit.
+        const order = await getOrderByProviderOrderId(razorpayOrderId);
 
         if (order) {
           await markPaid(order.code, razorpayPaymentId);
         } else {
           console.warn(
-            `[razorpay webhook] No pending order found for providerOrderId=${razorpayOrderId}`,
+            `[razorpay webhook] No order found for providerOrderId=${razorpayOrderId}`,
           );
         }
       }

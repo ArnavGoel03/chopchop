@@ -36,7 +36,7 @@ export function CouponField({ applied, onApply, onRemove }: CouponFieldProps) {
   if (applied) {
     return (
       <div className="flex items-center justify-between rounded-xl border border-mint/50 bg-mint/10 px-4 py-3">
-        <div className="flex items-center gap-2 text-sm font-semibold text-mint">
+        <div className="flex items-center gap-2 text-sm font-semibold text-mint-d">
           <CheckCircle2 size={16} />
           <span>{applied} applied</span>
         </div>

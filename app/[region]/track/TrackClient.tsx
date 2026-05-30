@@ -294,7 +294,7 @@ const STATUS_TONE: Record<
 };
 
 const TONE_CLASSES = {
-  mint: "bg-mint/15 text-mint",
+  mint: "bg-mint/15 text-mint-d",
   tomato: "bg-tomato/12 text-tomato",
   marigold: "bg-marigold/20 text-ink",
   neutral: "bg-ink/8 text-ink-soft",

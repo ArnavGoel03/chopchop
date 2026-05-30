@@ -12,7 +12,7 @@ export function Badge({
   const tones = {
     paper: "bg-paper-2 text-ink",
     ink: "bg-ink text-paper",
-    mint: "bg-mint/15 text-mint",
+    mint: "bg-mint/15 text-mint-d",
     tomato: "bg-tomato/12 text-tomato",
   };
   return (

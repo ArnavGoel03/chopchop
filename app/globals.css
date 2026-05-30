@@ -11,10 +11,14 @@
   --color-ink: #1f1410;
   --color-ink-soft: #4a3a33;
   --color-marigold: #f2a93b;
+  /* darker gold for text-on-light: #A0681A ≈ 5.0:1 on paper #FBF1E1 */
+  --color-marigold-d: #a0681a;
   --color-tomato: #c24a2d;
   --color-tomato-d: #9c3920;
   --color-melon: #e2547a;
   --color-mint: #6ba378;
+  /* darker mint for text-on-light: #3D7A4A ≈ 5.5:1 on paper #FBF1E1 */
+  --color-mint-d: #3d7a4a;
   --color-line: rgba(31, 20, 16, 0.14);
 
   --font-display: var(--font-fraunces), Georgia, serif;

@@ -57,11 +57,15 @@ function isValidGstin(gstin: string) {
 
 function Field({
   label,
+  name,
   error,
   children,
   required,
 }: {
   label: string;
+  /** Field name — used to generate the error element id (`field-{name}-error`)
+   *  so that inputs with aria-describedby can reference it correctly. */
+  name?: string;
   error?: string;
   children: React.ReactNode;
   required?: boolean;
@@ -74,7 +78,11 @@ function Field({
       </label>
       {children}
       {error && (
-        <p className="flex items-center gap-1 text-[12px] text-tomato" role="alert">
+        <p
+          id={name ? `field-${name}-error` : undefined}
+          className="flex items-center gap-1 text-[12px] text-tomato"
+          role="alert"
+        >
           <AlertTriangle size={12} />
           {error}
         </p>
@@ -391,7 +399,7 @@ export default function CheckoutPage({
               Contact details
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Full name" error={errors.name} required>
+              <Field label="Full name" name="name" error={errors.name} required>
                 <Input
                   id="field-name"
                   type="text"
@@ -407,6 +415,7 @@ export default function CheckoutPage({
 
               <Field
                 label={seg === "in" ? "Mobile number" : "Phone number"}
+                name="phone"
                 error={errors.phone}
                 required
               >
@@ -420,12 +429,14 @@ export default function CheckoutPage({
                   placeholder={seg === "in" ? "9876543210" : "+1 555 000 1234"}
                   hasError={!!errors.phone}
                   aria-required="true"
+                  aria-describedby={errors.phone ? "field-phone-error" : undefined}
                 />
               </Field>
             </div>
 
             <Field
               label={seg === "intl" ? "Email address" : "Email address (optional)"}
+              name="email"
               error={errors.email}
               required={seg === "intl"}
             >
@@ -439,6 +450,7 @@ export default function CheckoutPage({
                 placeholder="priya@example.com"
                 hasError={!!errors.email}
                 aria-required={seg === "intl" ? "true" : "false"}
+                aria-describedby={errors.email ? "field-email-error" : undefined}
               />
             </Field>
           </section>
@@ -448,7 +460,7 @@ export default function CheckoutPage({
             <h2 id="address-heading" className="font-display text-lg font-bold">
               Shipping address
             </h2>
-            <Field label="Full address" error={errors.address} required>
+            <Field label="Full address" name="address" error={errors.address} required>
               <Textarea
                 id="field-address"
                 autoComplete="street-address"
@@ -462,6 +474,7 @@ export default function CheckoutPage({
                 }
                 hasError={!!errors.address}
                 aria-required="true"
+                aria-describedby={errors.address ? "field-address-error" : undefined}
               />
             </Field>
             <p className="text-[12px] text-ink-soft">{region.shippingCopy}</p>
@@ -485,7 +498,7 @@ export default function CheckoutPage({
 
               {gstToggle && (
                 <div className="grid gap-4 rounded-xl border border-line bg-paper-2 p-4 sm:grid-cols-2">
-                  <Field label="GSTIN" error={errors.gstin} required>
+                  <Field label="GSTIN" name="gstin" error={errors.gstin} required>
                     <Input
                       id="field-gstin"
                       type="text"
@@ -497,9 +510,10 @@ export default function CheckoutPage({
                       maxLength={15}
                       hasError={!!errors.gstin}
                       aria-required="true"
+                      aria-describedby={errors.gstin ? "field-gstin-error" : undefined}
                     />
                   </Field>
-                  <Field label="Business name" error={errors.businessName} required>
+                  <Field label="Business name" name="businessName" error={errors.businessName} required>
                     <Input
                       id="field-businessName"
                       type="text"
@@ -508,6 +522,7 @@ export default function CheckoutPage({
                       placeholder="Sharma Enterprises"
                       hasError={!!errors.businessName}
                       aria-required="true"
+                      aria-describedby={errors.businessName ? "field-businessName-error" : undefined}
                     />
                   </Field>
                 </div>
@@ -626,8 +641,8 @@ export default function CheckoutPage({
 
           <p className="text-center text-[12px] text-ink-soft">
             By placing your order you agree to our{" "}
-            <a href="/terms" className="underline hover:text-ink">Terms</a> and{" "}
-            <a href="/privacy" className="underline hover:text-ink">Privacy Policy</a>.
+            <a href={`/${seg}/terms`} className="underline hover:text-ink">Terms</a> and{" "}
+            <a href={`/${seg}/privacy`} className="underline hover:text-ink">Privacy Policy</a>.
           </p>
         </form>
 

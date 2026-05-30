@@ -13,7 +13,7 @@ import { db, hasDb } from "./db";
 import { orders } from "./db/schema";
 import type { NewOrder, OrderRow } from "./db/schema";
 import { generateOrderCode } from "./utils";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, or, and, notInArray } from "drizzle-orm";
 
 // ─── Public interface ────────────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ export interface CreateOrderInput {
   totals: CartTotals;
   couponCode?: string;
   customer: { name: string; phone: string; email?: string };
-  shippingAddress?: Record<string, string>;
+  shippingAddress?: string;
   gstin?: string;
   businessName?: string;
   provider?: "razorpay" | "stripe";
@@ -46,7 +46,7 @@ export interface OrderRecord {
   customerName: string;
   customerPhone: string;
   customerEmail?: string | null;
-  shippingAddress?: Record<string, string> | null;
+  shippingAddress?: string | null;
   gstin?: string | null;
   businessName?: string | null;
   provider?: string | null;
@@ -77,7 +77,7 @@ function rowToRecord(row: OrderRow): OrderRecord {
     customerName: row.customerName,
     customerPhone: row.customerPhone,
     customerEmail: row.customerEmail,
-    shippingAddress: row.shippingAddress as Record<string, string> | null,
+    shippingAddress: (row.shippingAddress as string | null) ?? null,
     gstin: row.gstin,
     businessName: row.businessName,
     provider: row.provider,
@@ -160,6 +160,36 @@ export async function getOrderByCode(code: string): Promise<OrderRecord | null> 
   return row ? rowToRecord(row) : null;
 }
 
+/**
+ * Look up an order by the payment-provider's order ID.
+ * Uses a direct indexed DB query; falls back to in-memory scan in dev.
+ */
+export async function getOrderByProviderOrderId(
+  providerOrderId: string,
+): Promise<OrderRecord | null> {
+  if (!hasDb || !db) {
+    for (const rec of memStore.values()) {
+      if (rec.providerOrderId === providerOrderId) return rec;
+    }
+    return null;
+  }
+  const [row] = await db
+    .select()
+    .from(orders)
+    .where(eq(orders.providerOrderId, providerOrderId))
+    .limit(1);
+  return row ? rowToRecord(row) : null;
+}
+
+/** Terminal statuses — markPaid must not overwrite these. */
+const TERMINAL_STATUSES: OrderStatus[] = [
+  "paid",
+  "shipped",
+  "delivered",
+  "refunded",
+  "cancelled",
+];
+
 export async function markPaid(
   code: string,
   providerPaymentId: string,
@@ -167,13 +197,14 @@ export async function markPaid(
 ): Promise<void> {
   if (!hasDb || !db) {
     const rec = memStore.get(code);
-    if (rec) {
+    if (rec && !TERMINAL_STATUSES.includes(rec.status)) {
       rec.status = "paid";
       rec.providerPaymentId = providerPaymentId;
     }
     return;
   }
 
+  // Only transition from non-terminal states — idempotent for webhook retries.
   await db
     .update(orders)
     .set({
@@ -182,7 +213,12 @@ export async function markPaid(
       providerSignature: signature,
       updatedAt: new Date(),
     })
-    .where(eq(orders.code, code));
+    .where(
+      and(
+        eq(orders.code, code),
+        notInArray(orders.status, TERMINAL_STATUSES),
+      ),
+    );
 }
 
 export async function updateOrderStatus(

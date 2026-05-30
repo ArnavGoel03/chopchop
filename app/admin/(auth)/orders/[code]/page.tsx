@@ -127,20 +127,7 @@ export default async function OrderDetailPage({
         {/* shipping address */}
         {order.shippingAddress && (
           <Section title="Shipping address">
-            {(() => {
-              const a = order.shippingAddress;
-              return (
-                <>
-                  {a.line1 && <Row label="Line 1" value={a.line1} />}
-                  {a.line2 && <Row label="Line 2" value={a.line2} />}
-                  {a.city && <Row label="City" value={a.city} />}
-                  {a.state && <Row label="State" value={a.state} />}
-                  {a.postal && <Row label="Pincode" value={a.postal} />}
-                  {a.country && <Row label="Country" value={a.country} />}
-                  {a.phone && <Row label="Phone" value={a.phone} />}
-                </>
-              );
-            })()}
+            <Row label="Address" value={order.shippingAddress} />
           </Section>
         )}
 

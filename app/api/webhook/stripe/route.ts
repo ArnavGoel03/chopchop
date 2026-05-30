@@ -2,7 +2,7 @@ export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import { constructWebhookEvent } from "@/lib/payments/stripe";
-import { markPaid, listOrders } from "@/lib/orders";
+import { markPaid, getOrderByProviderOrderId } from "@/lib/orders";
 import type Stripe from "stripe";
 
 // Stripe requires raw body for signature verification — do NOT JSON.parse
@@ -19,10 +19,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const result = constructWebhookEvent(rawBody, sig);
     if (!result) {
-      // STRIPE_WEBHOOK_SECRET not configured — accept the event without verification
-      // in dev, but log a warning.
-      console.warn("[stripe webhook] Secret not configured — skipping verification.");
-      return NextResponse.json({ ok: true });
+      // STRIPE_WEBHOOK_SECRET is not configured — this is a misconfiguration,
+      // not a valid state. Return 400 so the error surfaces loudly instead of
+      // silently swallowing every webhook call.
+      console.error("[stripe webhook] STRIPE_WEBHOOK_SECRET not configured — rejecting webhook.");
+      return NextResponse.json(
+        { error: "Webhook secret not configured." },
+        { status: 400 },
+      );
     }
     event = result;
   } catch (err) {
@@ -35,15 +39,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const intent = event.data.object as Stripe.PaymentIntent;
     const paymentIntentId = intent.id;
 
-    // Find order by providerOrderId (stored as the PaymentIntent ID)
-    const recentOrders = await listOrders({ limit: 200, status: "pending" });
-    const order = recentOrders.find((o) => o.providerOrderId === paymentIntentId);
+    // Direct indexed lookup — not capped by a list limit.
+    const order = await getOrderByProviderOrderId(paymentIntentId);
 
     if (order) {
       await markPaid(order.code, paymentIntentId);
     } else {
       console.warn(
-        `[stripe webhook] No pending order found for providerOrderId=${paymentIntentId}`,
+        `[stripe webhook] No order found for providerOrderId=${paymentIntentId}`,
       );
     }
   }

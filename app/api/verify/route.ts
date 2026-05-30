@@ -51,7 +51,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  if (order.providerOrderId && order.providerOrderId !== razorpay_order_id) {
+  // An online order being verified MUST have a providerOrderId, and it must
+  // match exactly — reject both null and mismatched IDs to prevent a valid
+  // HMAC for any payment being claimed against a null-providerOrderId order.
+  if (!order.providerOrderId || order.providerOrderId !== razorpay_order_id) {
     return NextResponse.json(
       { ok: false, error: "Order ID mismatch." },
       { status: 400 },

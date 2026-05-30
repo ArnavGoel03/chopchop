@@ -85,7 +85,7 @@ export function productJsonLd(
       "@type": "Brand",
       name: SITE_NAME,
     },
-    url: absoluteUrl(`/${region.id}/products/${product.slug}`),
+    url: absoluteUrl(`/${region.id}/product/${product.slug}`),
     offers: {
       "@type": "Offer",
       priceCurrency: region.currency,
@@ -93,7 +93,7 @@ export function productJsonLd(
       availability: inStock
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
-      url: absoluteUrl(`/${region.id}/products/${product.slug}`),
+      url: absoluteUrl(`/${region.id}/product/${product.slug}`),
       seller: {
         "@type": "Organization",
         name: BUSINESS_NAME,

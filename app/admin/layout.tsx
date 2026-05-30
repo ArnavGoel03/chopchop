@@ -1,18 +1,13 @@
-export const runtime = "nodejs";
-
-import { redirect } from "next/navigation";
-import { isAuthed } from "@/lib/auth";
-import { AdminChrome } from "@/components/admin/AdminChrome";
-
-export const metadata = { title: "Admin · CHOP." };
-
-export default async function AdminLayout({
+/**
+ * Root admin layout — intentionally a pass-through with NO auth guard.
+ *
+ * Auth guarding lives in app/admin/(auth)/layout.tsx so that
+ * app/admin/login/page.tsx is reachable without a session (no redirect loop).
+ */
+export default function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const authed = await isAuthed();
-  if (!authed) redirect("/admin/login");
-
-  return <AdminChrome>{children}</AdminChrome>;
+  return <>{children}</>;
 }

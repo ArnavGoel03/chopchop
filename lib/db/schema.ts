@@ -33,7 +33,7 @@ export const orders = pgTable(
     customerName: text("customer_name").notNull(),
     customerPhone: text("customer_phone").notNull(),
     customerEmail: text("customer_email"),
-    shippingAddress: jsonb("shipping_address").$type<Record<string, string>>(),
+    shippingAddress: jsonb("shipping_address").$type<string>(),
     gstin: text("gstin"),
     businessName: text("business_name"),
 

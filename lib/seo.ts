@@ -73,8 +73,10 @@ export function buildMetadata({
     (alternates.languages as Record<string, string>)[
       other === "in" ? "en-IN" : "en"
     ] = mirrorAbs;
+    // x-default always points to the /in variant (home region).
+    // If we're already on /in, canonical IS the /in path; otherwise mirrorAbs is /in.
     (alternates.languages as Record<string, string>)["x-default"] =
-      absoluteUrl(mirrorPath(path, "intl")); // /in is x-default
+      region === "in" ? canonical : mirrorAbs;
   } else {
     // Non-region page: emit both regions as alternates
     for (const rid of REGION_IDS) {
